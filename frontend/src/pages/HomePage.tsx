@@ -2,6 +2,7 @@ import { useState } from "react";
 import { userOrderStore } from "../stores/order.store";
 import { useOutletContext } from "react-router";
 import type { ProductPayload } from "../types/product.type";
+import { toast } from "react-toastify";
 
 const arr = [
   {
@@ -36,7 +37,6 @@ const HomePage = () => {
   >([]);
 
   const notPending = userOrderStore((state) => state.notPending);
-
   const addToCart = userOrderStore((state) => state.addToCart);
 
   const handleOrderDetails = (orderCode: number) => {
@@ -44,7 +44,9 @@ const HomePage = () => {
     if (order) {
       setProductsByOrderCode(order.products);
     }
+    toast.success("Chi tiết đơn hàng sẽ hiển thị ở cột bên phải!");
   };
+
   const handleAddToCard = async (product: any) => {
     const body = {
       productId: product.productId,
@@ -54,8 +56,8 @@ const HomePage = () => {
       productPrice: product.productPrice,
     };
     await addToCart(userId, body);
+    toast.success("Sản phẩm đã được đưa vào giỏ hàng!");
   };
-  console.log(productsByOrderCode.length);
 
   return (
     <div className="flex flex-col gap-4">

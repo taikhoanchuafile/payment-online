@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Nav from "./components/Nav";
 import { Outlet } from "react-router";
 import { userOrderStore } from "./stores/order.store";
+import { ToastContainer } from "react-toastify";
 
 const arrNum = [
   {
@@ -33,6 +34,7 @@ const AppRouter = () => {
 
   return (
     <div className="flex items-center justify-center">
+      <ToastContainer />
       <Nav userId={userId} arrNum={arrNum} setUserId={setUserId}></Nav>
       <div className="mt-25 px-8 py-4 max-w-384 w-full">
         <Outlet context={{ userId, arrNum }}></Outlet>

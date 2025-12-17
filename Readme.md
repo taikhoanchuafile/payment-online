@@ -2,8 +2,17 @@
 
 ## 📌 Giới thiệu
 
-Dự án này là ứng dụng MERN Stack cho phép người dùng thực hiện **auto-payment-online**,  
-Mục tiêu: Tìm hiểu về **Tích hợp thanh toán trực tuyến + auto** với **PAYOS + VietQR** - cấu trúc rõ ràng, tách service, middleware, controller đầy đủ.
+Ứng dụng MERN Stack cho phép người dùng thực hiện **thanh toán trực tuyến tự** động với **PAYOS + VietQR** — tách rõ frontend & backend, hỗ trợ cấu trúc sạch, middleware, controller đầy đủ và có backend webhook
+
+📌 Lưu ý quan trọng:
+Dự án này KHÔNG xây dựng chức năng đăng nhập / đăng ký.
+Hệ thống giả định người dùng đã đăng nhập sẵn, có userId được tạo trước trong database và frontend chỉ tập trung vào luồng tạo đơn hàng & thanh toán.
+
+Ứng dụng được tách rõ:
+
+- Frontend: hiển thị UI, tạo yêu cầu thanh toán
+
+- Backend: xử lý tạo payment link, lưu order, nhận webhook xác nhận thanh toán
 
 ---
 
@@ -32,33 +41,37 @@ https://authgg-fe.vercel.app/
 - Zustand (quản lý state)
 - Axios + interceptor (refresh token)
 - React Router DOM
+- VietQR UI (hiển thị QR thanh toán)
 
 ### Backend
 
+- TypeScript
 - Node.js + Express.js
 - MongoDB + Mongoose
 - Bcrypt / Crypto (hash token)
 - Creat PaymentLinkIn / Confirm Webhook
+- Ngrok giả lập https
 
 ---
 
 ## 🧰 Công nghệ và khái niệm chính
 
-### **OAuth 2.0 / Goole Auth**
+### **PAYOS Payment Link**
 
-- Đây là giao thức xác thực cho phép người dùng đăng nhập bằng tài khoản Google.
-- Server nhận **credential** từ Google, BE xử lý thông tin và phản hồi **access token** để xác thực người dùng.
-- Giúp ứng dụng không cần phải lưu tài khoản/mật khẩu người dùng.
+- Backend tạo payment link từ PAYOS.
+- PAYOS trả về: URL thanh toán - QR code VietQR - orderCode
+- Frontend dùng thông tin này để hiển thị cho người dùng thanh toán.
 
-### **JWT - JSON WEB TOKEN**
+### **VietQR**
 
-- Dùng để tạo token xác thực cho người dùng sau khi đăng nhập thành công. Gồm 2 loại:
-- **Access Token:** token ngắn hạn(15-30 phút), dùng để xác thực các request đế server.
-- **Refresh Token:** token dài hạn(7-30 ngày), dùng để cấp lại access token khi hết hạn.
+- Hiển thị mã QR cho người dùng quét bằng app ngân hàng.
+- Nội dung QR gắn với orderCode và số tiền thanh toán.
+- Khi người dùng thanh toán xong, PAYOS sẽ gửi webhook về backend.
 
-### **Cooki HttpOnly**
+### **Webhook PAYOS**
 
-- Lưu refresh token an toàn trên trình duyệt, **JS không thể truy cập**, tránh rủi ro XSS.
+- PAYOS gọi webhook tới backend khi: Người dùng quét mã thanh toán - Thành công/thất bại/hủy/...
+  -Backend: Xác thực webhook => Cập nhật trạng thái đơn hàng trong MongoDB
 
 ### **Node.js + Express.js**
 
@@ -66,38 +79,42 @@ https://authgg-fe.vercel.app/
 
 ### **MongoDB + Mongoose**
 
-- Lưu thông tin order, thông tin QR, Thông tin giao dịch.
+- Lưu thông tin order, thông tin QR, thông tin giao dịch từ PAYOS.
 
 ---
 
-## 🔄 Quy trình Login Google
+## 🔄 Quy trình thanh toán
 
-**1. User click "Login with Google" trên frontend**
+**1. User truy cập Frontend**
 
-- FE hiện popup và gửi xác minh đến Google OAuth consent screen, nếu hợp lệ, người dùng chọn email đăng nhập.
+- FE giả định là user đã đăng nhập, cấp sẳn 2 user cho mọi người test, mỗi user sẽ có id khác nhau để phân biệt đơn hàng
 
-**2. Google trả "authorization code"**
+**2. User tạo đơn hàng"**
 
-- FE nhận code và gửi lên BE để đổi lấy access token Google.
+- User mua hàng, giỏ hàng sẽ hiển thị số lượng sản phẩm user đã mua
+- User truy cập giỏ hàng tiến hành \*_thanh toán_
+- FE gửi request tạo order lên BE
 
-**3. BE xác thực credential mà FE gửi lên với Client_id (KEY console cloud google)**
+**3. BE tạo Payment Link**
 
-- Nhận thông tin user (name, email, avatar, sub, email_verified,...).
-- Nếu user chưa có trên Database thì tạo mới.
+- Gọi API PAYOS
+- Nhận về: paymentUrl, qrCode, orderCode và những thông tin kèm theo khác
+- Lưu order vào MongoDB với trạng thái PENDING và phản hồi paymentUrl cho FE tạo QR
 
-**4. BE tạo JWT**
+**4. Frontend hiển thị QR / Link thanh toán**
 
-- Tạo **access token** (ngắn hạn) gửi response về FE.
-- Tạo **refresh token** (dài hạn) lưu trong MONGODB và gửi qua cookie về FE.
+- Người dùng quét QR VietQR để tiến hành thanh toán
 
-**5. FE sử dụng access token để gọi API**
+**5. PAYOS gửi webhook**
 
-- Nếu access token hết hạn thì FE gửi request lên BE(refresh-token) để nhận về access token mới mà không cần phải đăng nhập lại.
+- Khi thanh toán hoàn tất hoặc bị hủy
+- Backend: xác thực webhook , update trạng thái order trong MONGDB
 
-**6. Đăng xuất**
+**6. Frontend kiểm tra trạng thái đơn hàng**
 
-- BE sẽ xóa **refress token** trong MONGODB và cookies.
-- Access token hết hạn tự động đăng xuất.
+- Hiển thị: Thanh toán thành công
+- Gọi API check order
+- Update lại lịch sử đơn hàng
 
 ---
 
@@ -106,8 +123,8 @@ https://authgg-fe.vercel.app/
 ### **1. Clone project**
 
 ```bash
-git clone https://github.com/taikhoanchuafile/authgg.git
-cd authgg
+git clone https://github.com/taikhoanchuafile/payment-online.git
+cd payment-online
 ```
 
 ### **2.Backend setup**
@@ -117,14 +134,11 @@ cd backend
 npm install
 ```
 
-- Vào authgg/backend tạo file **_.env_**
+- Vào payment-online/backend tạo file **.env**
 
-```bash
+````bash
 PORT=5001
 # port của api backend (http://localhost:PORT)
-
-GOOGLE_CLIENT_ID=<client_id của Google>
-# client_id lấy từ https://console.cloud.google.com/ .VD:xxxxxxxxxxxx-ap44gugk6d5m56husl04bqkohgi0bd35.apps.googleusercontent.com
 
 MONGODB_URL=<url csdl của mongodb>
 # Key URL mongodb. Vd:mongodb+srv:....@cluster0.jerdkbp.mongodb.net/devGG?appName=Cluster0
@@ -132,14 +146,23 @@ MONGODB_URL=<url csdl của mongodb>
 FRONTEND_URL=http://localhost:5173
 #port frontend React
 
-ACCESS_TOKEN_SECRET=<key access tokeb>
-# VD:c39acd4a56d3a428767a9a5bd7f37a6b9ea40d1278401aeef (chuỗi bất kỳ)
-```
+#Đăng ký tài khoản PAYOS, tạo kênh thanh toán để lấy 3 KEY này
+PAYOS_CLIENT_ID=<Client_id>
+PAYOS_API_KEY=<Api_key>
+PAYOS_CHECKSUM_KEY=<checksum_key>
+PAYOS_BASE_URL=https://api-merchant.payos.vn
+# đường dẫn gốc của PAYOS
 
-- Chạy backend(/authgg/backend)
+- Chạy backend(/payment-online/backend)
 
 ```base
 npm run dev
+````
+
+-Nhớ setup Ngrok (lên trang chủ đăng ký để nhận mã chạy terminal để cái file.yml)
+
+```base
+ngrok http 5001
 ```
 
 ### **3.Setup frontend**
@@ -149,23 +172,31 @@ cd ../frontend
 npm install
 ```
 
-- Vào authgg/frontend tạo file **_.env_**
+- Vào payment-online/frontend tạo file **.env**
 
 ```base
-VITE_GOOGLE_CLIENT_ID=<client_id>
-# VD: xxxxxxxxxxxx-ap44gugk6d5m56husl04bqkohgi0bd35.apps.googleusercontent.com
-
 VITE_BACKEND_API_BASE_URL=http://localhost:5001/api
 # Nếu PORT Backend thay đổi: http://localhost:<PORT>/api
+
+#Sau khi chạy ngrok, chuyển thành
+VITE_BACKEND_API_BASE_URL=<https...ngrok-free.dev>/api
+#vd: https://imelda-hypothetical-mayola.ngrok-free.dev/api
+
 ```
 
-- Chạy Frontend(/authgg/frontend)
+- Chạy Frontend(/payment-online/frontend)
 
 ```base
 npm run dev
 ```
 
 - Ctrl + Chuột trái vào URL: _http://localhost:5173_ để mở dự án trên trình duyệt
+
+### **4.Gắn link nhận Webhook Url trên PAYOS**
+
+- Tại giao diện "Kênh thanh toán" => "Cài đặt" => "Chỉnh sửa thông tin" => điền link nhận webhook vào trường Webhook Url
+  <https.....ngrok-free.dev>/api/orders/confirm-webhook
+  vd: https://imelda-hypothetical-mayola.ngrok-free.dev/api/orders/confirm-webhook
 
 ## 📄 License
 

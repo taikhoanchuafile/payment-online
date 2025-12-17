@@ -1,6 +1,7 @@
 import { useOutletContext } from "react-router";
 import { userOrderStore } from "../stores/order.store";
 import { BanknoteArrowUp, CircleDashed, Undo2 } from "lucide-react";
+import { toast } from "react-toastify";
 
 const OrderPage = () => {
   const { userId }: { userId: string } = useOutletContext();
@@ -25,6 +26,9 @@ const OrderPage = () => {
 
   const handlePayment = async () => {
     await getPaymentLinkIn(userId);
+    toast.success(
+      "Bạn sẽ được chuyển đến trang thanh toán, vui lòng quét mã để thanh toán!"
+    );
   };
 
   return (
