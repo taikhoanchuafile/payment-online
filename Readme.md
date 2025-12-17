@@ -71,7 +71,7 @@ https://payment-online-upload.vercel.app/
 ### **Webhook PAYOS**
 
 - PAYOS gọi webhook tới backend khi: Người dùng quét mã thanh toán - Thành công/thất bại/hủy/...
-  -Backend: Xác thực webhook => Cập nhật trạng thái đơn hàng trong MongoDB
+- Backend: Xác thực webhook => Cập nhật trạng thái đơn hàng trong MongoDB
 
 ### **Node.js + Express.js**
 
@@ -160,7 +160,7 @@ PAYOS_BASE_URL=https://api-merchant.payos.vn
 npm run dev
 ````
 
-- Nhớ setup Ngrok (lên trang chủ đăng ký để nhận mã chạy terminal để cái file.yml)
+- Nhớ setup ngrok (lên trang chủ đăng ký để nhận mã chạy terminal để cái file.yml)
 
 ```base
 ngrok http 5001
