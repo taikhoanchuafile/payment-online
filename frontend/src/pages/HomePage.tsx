@@ -43,8 +43,8 @@ const HomePage = () => {
     const order = notPending?.find((val) => val.orderCode === orderCode);
     if (order) {
       setProductsByOrderCode(order.products);
+      toast.success("Chi tiết đơn hàng sẽ hiển thị ở cột bên phải!");
     }
-    toast.success("Chi tiết đơn hàng sẽ hiển thị ở cột bên phải!");
   };
 
   const handleAddToCard = async (product: any) => {
@@ -56,7 +56,6 @@ const HomePage = () => {
       productPrice: product.productPrice,
     };
     await addToCart(userId, body);
-    toast.success("Sản phẩm đã được đưa vào giỏ hàng!");
   };
 
   return (

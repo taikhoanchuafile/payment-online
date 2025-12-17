@@ -37,7 +37,7 @@ export const userOrderStore = create<OrderState>((set, get) => ({
       set({ isloading: true });
       const { order } = await addToCartService(userId, product);
       get().setPening([order]);
-      toast.success("Thêm sản phẩm vào giỏ hàng thành công!");
+      toast.success("Sản phẩm đã được thêm vào giỏ hàng!");
     } catch (error) {
       console.error("Lỗi khi gọi addToCart", error);
       toast.success("Mua sản phẩm thất bại!");
