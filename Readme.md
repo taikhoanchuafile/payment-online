@@ -39,7 +39,7 @@ https://payment-online-upload.vercel.app/
 - React + TypeScript
 - Vite
 - Zustand (quản lý state)
-- Axios + interceptor (refresh token)
+- Axios
 - React Router DOM
 - VietQR UI (hiển thị QR thanh toán)
 
@@ -48,8 +48,8 @@ https://payment-online-upload.vercel.app/
 - TypeScript
 - Node.js + Express.js
 - MongoDB + Mongoose
-- Bcrypt / Crypto (hash token)
-- Creat PaymentLinkIn / Confirm Webhook
+- Crypto (Tạo chữ ký Signature)
+- Creat PaymentLink / Confirm Webhook
 - Ngrok giả lập https
 
 ---
@@ -149,9 +149,10 @@ FRONTEND_URL=http://localhost:5173
 #Đăng ký tài khoản PAYOS, tạo kênh thanh toán để lấy 3 KEY này
 PAYOS_CLIENT_ID=<Client_id>
 PAYOS_API_KEY=<Api_key>
-PAYOS_CHECKSUM_KEY=<checksum_key>
+PAYOS_CHECKSUM_KEY=<Checksum_key>
 PAYOS_BASE_URL=https://api-merchant.payos.vn
 # đường dẫn gốc của PAYOS
+```
 
 - Chạy backend(/payment-online/backend)
 
@@ -159,7 +160,7 @@ PAYOS_BASE_URL=https://api-merchant.payos.vn
 npm run dev
 ````
 
--Nhớ setup Ngrok (lên trang chủ đăng ký để nhận mã chạy terminal để cái file.yml)
+- Nhớ setup Ngrok (lên trang chủ đăng ký để nhận mã chạy terminal để cái file.yml)
 
 ```base
 ngrok http 5001
@@ -194,9 +195,9 @@ npm run dev
 
 ### **4.Gắn link nhận Webhook Url trên PAYOS**
 
-- Tại giao diện "Kênh thanh toán" => "Cài đặt" => "Chỉnh sửa thông tin" => điền link nhận webhook vào trường Webhook Url
-  <https.....ngrok-free.dev>/api/orders/confirm-webhook
-  vd: https://imelda-hypothetical-mayola.ngrok-free.dev/api/orders/confirm-webhook
+- https://my.payos.vn/ => Tại giao diện "Kênh thanh toán" => "Cài đặt" => "Chỉnh sửa thông tin" => điền link nhận webhook vào trường Webhook Url
+  <https.....ngrok-free.dev>/api/orders/confirm-webhook.
+  VD: https://imelda-hypothetical-mayola.ngrok-free.dev/api/orders/confirm-webhook
 
 ## 📄 License
 
