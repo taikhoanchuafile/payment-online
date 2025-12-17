@@ -49,7 +49,7 @@ https://payment-online-upload.vercel.app/
 - Node.js + Express.js
 - MongoDB + Mongoose
 - Crypto (Tạo chữ ký Signature)
-- Creat PaymentLink / Confirm Webhook
+- Create PaymentLink / Confirm Webhook
 - Ngrok giả lập https
 
 ---
