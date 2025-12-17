@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Nav from "./components/Nav";
 import { Outlet } from "react-router";
 import { userOrderStore } from "./stores/order.store";
