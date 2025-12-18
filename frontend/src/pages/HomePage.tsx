@@ -91,8 +91,8 @@ const HomePage = () => {
         <h1 className="text-2xl font-bold capitalize leading-none tracking-wide p-4 bg-neutral-300 shadow-md">
           Lịch sử mua hàng
         </h1>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="flex flex-col gap-4 mt-4 text-center border-r px-4">
+        <div className="grid sm:grid-cols-2  gap-4">
+          <div className="flex flex-col gap-4 mt-4 text-center border-b sm:border-r px-4">
             <div className="grid grid-cols-4 font-bold justify-around underline underline-offset-4">
               <div>Mã đơn hàng</div>
               <div>Tên người mua</div>
@@ -101,10 +101,13 @@ const HomePage = () => {
             </div>
             {notPending?.map((np, index) => {
               return (
-                <div key={index} className="grid grid-cols-4 justify-around ">
+                <div
+                  key={index}
+                  className="grid gap-2 grid-cols-4 justify-around py-2"
+                >
                   <div
                     onClick={() => handleOrderDetails(np.orderCode)}
-                    className="text-blue-500 underline underline-offset-2 cursor-pointer"
+                    className="text-blue-500 underline underline-offset-2 cursor-pointer wrap-break-word"
                   >
                     {np.orderCode}
                   </div>
@@ -136,7 +139,7 @@ const HomePage = () => {
             {productsByOrderCode.length > 0 ? (
               productsByOrderCode.map((product, index) => {
                 return (
-                  <div key={index} className="grid grid-cols-5">
+                  <div key={index} className="grid grid-cols-5 gap-2">
                     <h2 className="text-xl capitalize">
                       {product.productName}
                     </h2>
